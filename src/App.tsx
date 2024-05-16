@@ -1,33 +1,39 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import 'react-pdf/dist/Page/TextLayer.css';
+
+import { Document, Page } from 'react-pdf';
+import { pdfjs } from 'react-pdf';
+import { useState, useCallback } from 'react';
+
+import { setSelection } from './selection';
+
+pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+  'pdfjs-dist/build/pdf.worker.min.js',
+  import.meta.url,
+).toString();
+
 import './App.css'
 
+const searchString = 'Barnes\nbillba';
+
 function App() {
-  const [count, setCount] = useState(0)
+  const [numPages, setNumPages] = useState<number>();
+  const [pageNumber, setPageNumber] = useState<number>(1);
+
+  const prev = useCallback(() => setPageNumber(page => page == 0 ? page : page - 1), [])
+  const next = useCallback(() => setPageNumber(page => page == (numPages ?? 0) - 1 ? page : page + 1), [numPages])
+  const onDocumentLoadSuccess = useCallback(({ numPages }: { numPages: number }) => setNumPages(numPages), []);
+  const onRenderTextLayerSuccess = useCallback(() => setSelection(searchString), []);
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
+      <p>
+        <span onClick={prev}>Prev</span>
+        Page {pageNumber} of {numPages}
+        <span onClick={next}>Next</span>
       </p>
+      <Document file="./Bill.pdf" onLoadSuccess={onDocumentLoadSuccess}>
+        <Page pageNumber={pageNumber} onRenderTextLayerSuccess={onRenderTextLayerSuccess}/>
+      </Document>
     </>
   )
 }
