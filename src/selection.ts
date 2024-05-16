@@ -1,18 +1,19 @@
-export function setSelection(text: string): boolean {
+export function setSelection(searchText: string): boolean {
   const root = document.getElementsByClassName('react-pdf__Page__textContent')[0] as HTMLDivElement;
-  const children = [...root.childNodes].filter(node => node instanceof HTMLSpanElement) as HTMLSpanElement[];
+  const spans = [...root.childNodes].filter(node => node instanceof HTMLSpanElement) as HTMLSpanElement[];
   
-  const allText = children.map(node => node.innerText).join(' ');
-  console.log("page text", allText);
+  const normalizedSourceText = spans.map(span => span.innerText).join(' ').replace(/\s+/g,' ').trim();
+  console.assert(normalizedSourceText.indexOf("\n") == -1);
+  console.log("page text", normalizedSourceText);
 
-  const flattenedText = text.replaceAll('\n', ' ');
-  console.log("search text", flattenedText);
+  const normalizedSearchText = searchText.replaceAll('\n', ' ').replace(/\s+/g,' ').trim();
+  console.log("search text", normalizedSearchText);
 
   // right now let's just find the first instance of the text
-  const first = allText.indexOf(flattenedText);
-  console.log("location of search text in page text", first);
+  const location = normalizedSourceText.indexOf(normalizedSearchText);
+  console.log("location of search text in page text", location);
 
-  if (first == -1) {
+  if (location == -1) {
     return false;
   }
 
@@ -24,17 +25,17 @@ export function setSelection(text: string): boolean {
  
   let offset = 0;
 
-  for (const node of children) {
-    const innerText = node.innerText;
+  for (const span of spans) {
+    const innerText = span.innerText;
 
-    if (!anchorNode && offset + innerText.length > first) {
-      anchorNode = node;
-      anchorOffset = first - offset;
+    if (!anchorNode && offset + innerText.length > location) {
+      anchorNode = span;
+      anchorOffset = location - offset;
     }
 
-    if (anchorNode && offset + innerText.length > first + text.length) {
-      focusNode = node;
-      focusOffset = first + text.length - offset;
+    if (anchorNode && offset + innerText.length > location + searchText.length) {
+      focusNode = span;
+      focusOffset = location + searchText.length - offset;
       break;
     }
 
