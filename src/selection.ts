@@ -1,3 +1,7 @@
+function normalizedText(text: string): string {
+  return text.replace(/\s+/g,' ').trim();
+}
+
 export function setSelection(searchText: string): boolean {
   const root = document.getElementsByClassName('react-pdf__Page__textContent')[0] as HTMLDivElement;
   const spans = [...root.childNodes].filter(node => node instanceof HTMLSpanElement) as HTMLSpanElement[];
@@ -26,20 +30,23 @@ export function setSelection(searchText: string): boolean {
   let offset = 0;
 
   for (const span of spans) {
-    const innerText = span.innerText;
+    const innerText = normalizedText(span.innerText);
+    if (innerText.length > 0) {
+      console.log(innerText, innerText.length);
 
-    if (!anchorNode && offset + innerText.length > location) {
-      anchorNode = span;
-      anchorOffset = location - offset;
+      if (!anchorNode && offset + innerText.length > location) {
+        anchorNode = span;
+        anchorOffset = location - offset;
+      }
+
+      if (anchorNode && offset + innerText.length > location + normalizedSearchText.length) {
+        focusNode = span;
+        focusOffset = location + normalizedSearchText.length - offset;
+        break;
+      }
+
+      offset += innerText.length + 1;
     }
-
-    if (anchorNode && offset + innerText.length > location + searchText.length) {
-      focusNode = span;
-      focusOffset = location + searchText.length - offset;
-      break;
-    }
-
-    offset += innerText.length + 1;
   }
 
   document.getSelection()!.setBaseAndExtent(anchorNode!.firstChild!, anchorOffset, focusNode!.firstChild!, focusOffset);
