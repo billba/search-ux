@@ -13,7 +13,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL(
 
 import './App.css'
 
-const searchString = 'Barnes\nbillba';
+const searchString = 'radiates goodwill and enthusiasm. He is optimistic about life in general and human potential in particular. He flourishes in jobs';
 
 function App() {
   const [numPages, setNumPages] = useState<number>();
@@ -25,16 +25,20 @@ function App() {
   const onRenderTextLayerSuccess = useCallback(() => setSelection(searchString), []);
 
   return (
-    <>
-      <p>
-        <span onClick={prev}>Prev</span>
-        Page {pageNumber} of {numPages}
-        <span onClick={next}>Next</span>
-      </p>
-      <Document file="./Bill.pdf" onLoadSuccess={onDocumentLoadSuccess}>
-        <Page pageNumber={pageNumber} onRenderTextLayerSuccess={onRenderTextLayerSuccess}/>
-      </Document>
-    </>
+    <div id="app">
+      <div id="left">
+      </div>
+      <div>
+        <p>
+          <span onClick={prev}>Prev</span>
+          Page {pageNumber} of {numPages}
+          <span onClick={next}>Next</span>
+        </p>
+        <Document file="./Bill.pdf" onLoadSuccess={onDocumentLoadSuccess}>
+          <Page pageNumber={pageNumber} onRenderTextLayerSuccess={onRenderTextLayerSuccess}/>
+        </Document>
+      </div>
+    </div>
   )
 }
 
