@@ -23,7 +23,9 @@
 
   Then we turn the search string into a regular expression that is flexible about whitespace.
 
-
+  Then we search for the regular expression in the joined text. When we find a match, we figure out
+  which span it belongs to using a handy lookup table which maps the start and end indices of each line
+  to the origin span.
 */
 
 export function* search(searchText: string, root: HTMLDivElement)  {
