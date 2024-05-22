@@ -36,9 +36,9 @@ export function* search(searchText: string, root: HTMLDivElement)  {
   const pageText = pageTexts.join('\n');
 
   const searchTextRegExp = new RegExp(escape(searchText).replace(/\s+/g, '\\s+'), 'g');
-  const matches = [...pageText.matchAll(searchTextRegExp)];
 
-  for (const match of matches) {
+  let match: RegExpMatchArray | null;
+  while ((match = searchTextRegExp.exec(pageText)) != null) {
     const index = match.index!;
     const length = match[0].length;
 
@@ -58,6 +58,8 @@ export function* search(searchText: string, root: HTMLDivElement)  {
         offset: index + length - pageTextRanges[focusIndex][0] - focusIndex,
       },
     }
+
+    searchTextRegExp.lastIndex = match.index! + 1; // this lets us find overlapping matches, e.g. 'b c b' in 'a b c b c b'
   }
 }
 

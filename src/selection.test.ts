@@ -31,8 +31,14 @@ searchTest('a b c |d e f', 'b c', [[0, 2, 0, 5]]);
 searchTest('a b c |d e f', 'b c d', [[0, 2, 1, 1]]);
 searchTest('a b c| d e f', 'b c d', [[0, 2, 1, 2]]);
 searchTest('a b c | d e f', 'b c d', [[0, 2, 1, 2]]);
+
+// empty spans
 searchTest('a b c||d e f', 'c d', [[0, 4, 2, 1]]);
+
+// multiple matches
 searchTest('a b c b c d', 'b c', [[0, 2, 0, 5], [0, 6, 0, 9]]);
 searchTest('a b c|b c d', 'b c', [[0, 2, 0, 5], [1, 0, 1, 3]]);
-searchTest('a b|c b c d', 'b c', [[0, 2, 1, 1],[1, 2, 1, 5]]);
-// searchTest('a b c b c b', 'b c b', [[0, 2, 0, 7],[0, 6, 0, 11]]); // this fails because matchAll won't find overlaps
+searchTest('a b|c b c d', 'b c', [[0, 2, 1, 1], [1, 2, 1, 5]]);
+
+// multiple overlapping matches
+searchTest('a b c b c b', 'b c b', [[0, 2, 0, 7],[0, 6, 0, 11]]);
